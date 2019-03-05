@@ -57,6 +57,7 @@ public class Laser extends OpticElement{
                     (int) (yApp - halfSize * zoom),
                     (int) (2 * halfSize * zoom),
                     (int) (2 * halfSize * zoom));
+        } else{
         }
 
     }
@@ -65,10 +66,11 @@ public class Laser extends OpticElement{
      * This method tells if a given set of coordinates is contained in the
      * element.
      *
-     * @param x
-     * @param y
+     * @param xPoint
+     * @param yPoint
      * @return
      */
+    @Override
     public boolean containsPoint(float xPoint, float yPoint){
 
         float xMin = x - size / 2;

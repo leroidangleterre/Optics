@@ -76,4 +76,8 @@ public abstract class OpticElement{
 
     @Override
     public abstract OpticElement clone();
+
+    public String toString(){
+        return "OpticElement at (" + x + ", " + y + ");";
+    }
 }

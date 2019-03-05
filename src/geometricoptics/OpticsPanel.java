@@ -42,8 +42,7 @@ public class OpticsPanel extends JPanel{
 
         world.addListener(this);
 
-        MyMouseListener mouseListener = new MyMouseListener(zoomScroll, w);
-        mouseListener.setOpticsPanel(this);
+        MyMouseListener mouseListener = new MyMouseListener(zoomScroll, w, this);
 
         this.addMouseListener(mouseListener);
         this.addMouseMotionListener(mouseListener);
@@ -53,6 +52,7 @@ public class OpticsPanel extends JPanel{
         isCurrentlyScrolling = false;
     }
 
+    @Override
     public void paintComponent(Graphics g){
         g.setColor(Color.white);
         g.fillRect(0, 0, g.getClipBounds().width, g.getClipBounds().height);
