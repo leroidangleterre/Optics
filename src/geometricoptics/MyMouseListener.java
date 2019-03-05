@@ -24,7 +24,7 @@ public class MyMouseListener implements MouseListener, MouseMotionListener{
     private float xLeftClick, yLeftClick, xRightClick, yRightClick;
     private boolean leftClickActive, rightClickActive;
 
-    public MyMouseListener(ZoomScroll zsParam, World w){
+    public MyMouseListener(ZoomScroll zsParam, World w, OpticsPanel panel){
         zs = zsParam;
         world = w;
         lastX = -1;
@@ -37,6 +37,12 @@ public class MyMouseListener implements MouseListener, MouseMotionListener{
         yRightClick = -1;
         leftClickActive = false;
         rightClickActive = false;
+
+        opticsPanel = panel;
+    }
+
+    public MyMouseListener(ZoomScroll zsParam, World w){
+        this(zsParam, w, null);
     }
 
     public MyMouseListener(ZoomScroll zsParam){
@@ -64,7 +70,7 @@ public class MyMouseListener implements MouseListener, MouseMotionListener{
             opticsPanel.setCurrentScroll(true);
             break;
         case 3:
-            if(world.pointIsInSelection(xClickInWorld, yClickInWorld)){
+            if(world.pointIsInSelectedObject(xClickInWorld, yClickInWorld)){
                 // Start rotating selection
                 world.receiveRightClick(xClickInWorld, yClickInWorld);
             } else{
@@ -107,7 +113,12 @@ public class MyMouseListener implements MouseListener, MouseMotionListener{
     public void mouseDragged(MouseEvent e){
         float xWorld = (e.getX() - zs.getX()) / zs.getZoom();
         float yWorld = (e.getY() - zs.getY()) / zs.getZoom();
-        world.receiveMouseMove(xWorld, yWorld);
+
+        if(opticsPanel.isCurrentlyScrolling()){
+            zs.scroll(e.getX() - lastX, e.getY() - lastY);
+        } else{
+            world.receiveMouseMove(xWorld, yWorld);
+        }
         lastX = e.getX();
         lastY = e.getY();
     }
@@ -116,6 +127,7 @@ public class MyMouseListener implements MouseListener, MouseMotionListener{
     public void mouseMoved(MouseEvent e){
         float xWorld = (e.getX() - zs.getX()) / zs.getZoom();
         float yWorld = (e.getY() - zs.getY()) / zs.getZoom();
+
         world.receiveMouseMove(xWorld, yWorld);
         lastX = e.getX();
         lastY = e.getY();

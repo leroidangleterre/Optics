@@ -28,6 +28,7 @@ public class MyKeyListener implements KeyListener{
     public void keyPressed(KeyEvent e){
         switch(e.getKeyCode()){
         case KeyEvent.VK_A:
+            System.out.println("KeyListener A");
             world.toggleSelection();
             break;
         case KeyEvent.VK_D:

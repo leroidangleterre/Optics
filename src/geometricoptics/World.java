@@ -69,7 +69,7 @@ public class World{
         if(command.startsWith("Create")){
             // Create a new object
             String objectName = command.substring(7);
-            System.out.println("object name: <" + objectName + ">");
+//            System.out.println("object name: <" + objectName + ">");
             OpticElement newOpticElement = null;
             if(objectName.equals("lens")){
                 newOpticElement = new Lens();
@@ -166,26 +166,7 @@ public class World{
         triggerListeners();
     }
 
-    /**
-     * A point is in the selection if it is in at least one selected element.
-     *
-     * @param x
-     * @param y
-     * @return
-     */
-    public boolean pointIsInSelection(float x, float y){
-        for(OpticElement elem : elements){
-            if(elem.isSelected){
-                if(elem.containsPoint(x, y)){
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
     public void receiveLeftClick(float xClick, float yClick){
-
         xLeftClick = xClick;
         yLeftClick = yClick;
 
@@ -202,7 +183,7 @@ public class World{
             selectionBeingMoved = false;
         }
 
-        if(pointIsInSelected(xClick, yClick)){
+        if(pointIsInSelectedObject(xClick, yClick)){
             // click on a selected object: start moving all selected objects
             selectionBeingMoved = true;
         } else{
@@ -213,12 +194,29 @@ public class World{
         triggerListeners();
     }
 
+    /**
+     * Un-select each and every element. After calling this method, no element
+     * is selected.
+     */
+    public void unselectEverything(){
+        for(OpticElement e : elements){
+            e.setSelected(false);
+        }
+        for(OpticElement e : clones){
+            e.setSelected(false);
+        }
+    }
+
     public void receiveLeftUnclick(float x, float y){
         if(x == xLeftClick && y == yLeftClick){
             // release at the same point, if inside an object: select that object
-
+            unselectEverything();
+            if(pointIsInObject(x, y)){
+                selectObjectsInRegion(x, y, x, y);
+            }
         } else if(isCurrentlySelecting){
             // Select all objects included in the rectangle.
+            unselectEverything();
             selectObjectsInRegion(xLeftClick, yLeftClick, x, y);
             isCurrentlySelecting = false;
         }
@@ -252,9 +250,7 @@ public class World{
 
         // Translate any new objects in the clones list
         for(OpticElement e : clones){
-            if(e.isSelected){
-                e.translate(dx, dy);
-            }
+            e.translate(dx, dy);
         }
 
         lastXMouse = x;
@@ -269,13 +265,25 @@ public class World{
      */
     public void selectObjectsInRegion(float x1, float y1, float x2, float y2){
 
-        float xLeft = Math.min(x1, x2);
-        float xRight = Math.max(x1, x2);
-        float yBottom = Math.min(y1, y2);
-        float yTop = Math.max(y1, y2);
+        if(x1 == x2 && y1 == y2){
+            // Selection by simple click on the object.
+            for(OpticElement elem : elements){
+                if(elem.containsPoint(x1, y1)){
+                    elem.setSelected(true);
+                } else{
+                    elem.setSelected(false);
+                }
+            }
+        } else{
+            // Selection by rectangle.
+            float xLeft = Math.min(x1, x2);
+            float xRight = Math.max(x1, x2);
+            float yBottom = Math.min(y1, y2);
+            float yTop = Math.max(y1, y2);
 
-        for(OpticElement elem : elements){
-            elem.setSelected(elem.isContainedInRegion(xLeft, yBottom, xRight, yTop));
+            for(OpticElement elem : elements){
+                elem.setSelected(elem.isContainedInRegion(xLeft, yBottom, xRight, yTop));
+            }
         }
     }
 
@@ -310,12 +318,29 @@ public class World{
      * @param y
      * @return
      */
-    public boolean pointIsInSelected(float x, float y){
+    public boolean pointIsInSelectedObject(float x, float y){
         for(OpticElement e : elements){
             if(e.isSelected){
                 if(e.containsPoint(x, y)){
                     return true;
                 }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Returns true when the given point is inside at least one object, selected
+     * or not, false otherwise.
+     *
+     * @param x
+     * @param y
+     * @return
+     */
+    public boolean pointIsInObject(float x, float y){
+        for(OpticElement e : elements){
+            if(e.containsPoint(x, y)){
+                return true;
             }
         }
         return false;
