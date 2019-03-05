@@ -14,13 +14,19 @@ import java.awt.event.MouseMotionListener;
  */
 public class MyMouseMotionListener implements MouseMotionListener{
 
+    private World world;
     private ZoomScroll zs;
     private int lastX, lastY;
 
-    public MyMouseMotionListener(ZoomScroll zsParam){
+    public MyMouseMotionListener(ZoomScroll zsParam, World w){
         zs = zsParam;
         lastX = -1;
         lastY = -1;
+        world = w;
+    }
+
+    public MyMouseMotionListener(ZoomScroll zsParam){
+        this(zsParam, null);
     }
 
     @Override
@@ -28,19 +34,20 @@ public class MyMouseMotionListener implements MouseMotionListener{
         int dx = e.getX() - lastX;
         int dy = e.getY() - lastY;
 
-        zs.increaseX(dx);
-        zs.increaseY(dy);
+        float zoom = zs.getZoom();
+        zs.increaseX(dx * zoom);
+        zs.increaseY(dy * zoom);
 
         lastX = e.getX();
         lastY = e.getY();
-
     }
 
     @Override
     public void mouseMoved(MouseEvent e){
+        int dx = e.getX() - lastX;
+        int dy = e.getY() - lastY;
+
         lastX = e.getX();
         lastY = e.getY();
-
     }
-
 }

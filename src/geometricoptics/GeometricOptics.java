@@ -6,6 +6,8 @@
 package geometricoptics;
 
 import javax.swing.JFrame;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
 
 /**
  *
@@ -18,13 +20,27 @@ public class GeometricOptics{
      */
     public static void main(String[] args){
 
+        World world = new World();
+
         JFrame window = new JFrame();
 
         window.setTitle("Optics");
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         window.setVisible(true);
 
-        window.setContentPane(new OpticsPanel());
+        JMenuBar menuBar = new JMenuBar();
+
+        JMenu menu = new OpticsMenu(world);
+
+        menuBar.add(menu);
+
+        window.setJMenuBar(menuBar);
+
+        OpticsPanel panel = new OpticsPanel(world);
+
+        window.addKeyListener(new MyKeyListener(world));
+
+        window.setContentPane(panel);
         window.pack();
         window.repaint();
     }

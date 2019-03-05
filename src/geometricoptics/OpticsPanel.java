@@ -19,26 +19,56 @@ import javax.swing.JPanel;
  */
 public class OpticsPanel extends JPanel{
 
+    // The elements displayed
+    private World world;
+
     // Scroll and zoom
     private ZoomScroll zoomScroll;
-    private Rectangle rect;
 
-    public OpticsPanel(){
+    private boolean isCurrentlyScrolling;
+
+    public OpticsPanel(World w){
         super();
+
+        world = w;
+
         Dimension preferredSize = new Dimension(1000, 700);
         this.setPreferredSize(preferredSize);
         this.zoomScroll = new ZoomScroll();
         this.zoomScroll.addListener(this);
-        this.rect = new Rectangle(150, 100, 300, 200);
-        this.addMouseListener(new MyMouseListener(zoomScroll));
-        this.addMouseMotionListener(new MyMouseMotionListener(zoomScroll));
-        this.addMouseWheelListener(new MyMouseWheelListener(zoomScroll));
+        zoomScroll.setX(500);
+        zoomScroll.setY(350);
+        zoomScroll.setZoom(7.9f);
+
+        world.addListener(this);
+
+        MyMouseListener mouseListener = new MyMouseListener(zoomScroll, w);
+        mouseListener.setOpticsPanel(this);
+
+        this.addMouseListener(mouseListener);
+        this.addMouseMotionListener(mouseListener);
+        this.addMouseWheelListener(new MyMouseWheelListener(zoomScroll, w));
+        this.addKeyListener(new MyKeyListener(w));
+
+        isCurrentlyScrolling = false;
     }
 
     public void paintComponent(Graphics g){
         g.setColor(Color.white);
         g.fillRect(0, 0, g.getClipBounds().width, g.getClipBounds().height);
-        g.setColor(Color.red);
-        rect.paint(g, zoomScroll.getX(), zoomScroll.getY(), zoomScroll.getZoom());
+        world.paint(g, zoomScroll.getX(), zoomScroll.getY(), zoomScroll.getZoom());
+
+    }
+
+    public void scroll(float dx, float dy){
+        zoomScroll.scroll(dx, dy);
+    }
+
+    public void setCurrentScroll(boolean b){
+        isCurrentlyScrolling = b;
+    }
+
+    public boolean isCurrentlyScrolling(){
+        return isCurrentlyScrolling;
     }
 }

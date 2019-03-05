@@ -14,11 +14,17 @@ import java.awt.event.MouseWheelListener;
  */
 public class MyMouseWheelListener implements MouseWheelListener{
 
+    private World world;
     private final ZoomScroll zs;
     float zoomFact = 1.03f;
 
-    public MyMouseWheelListener(ZoomScroll zsParam){
+    public MyMouseWheelListener(ZoomScroll zsParam, World w){
         zs = zsParam;
+        world = w;
+    }
+
+    public MyMouseWheelListener(ZoomScroll zsParam){
+        this(zsParam, null);
     }
 
     // The zoom and scroll are modified when the mouse wheel is used.
