@@ -62,6 +62,12 @@ public class ZoomScroll{
         setY(y0 += dy / zoom);
     }
 
+    public void scroll(float dx, float dy){
+        x0 += dx;
+        y0 += dy;
+        triggerListeners();
+    }
+
     public void increaseZoom(float dZoom){
         setZoom(zoom * dZoom);
     }
