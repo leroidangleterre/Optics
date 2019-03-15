@@ -16,11 +16,11 @@ import javax.swing.JMenuItem;
  *
  * @author arthurmanoha
  */
-public class OpticsMenu extends JMenu implements ActionListener, ItemListener{
+public class OpticsMenu extends JMenu implements ActionListener, ItemListener {
 
     private World world;
 
-    public OpticsMenu(World w){
+    public OpticsMenu(World w) {
         super("Menu");
 
         world = w;
@@ -40,13 +40,12 @@ public class OpticsMenu extends JMenu implements ActionListener, ItemListener{
     }
 
     @Override
-    public void itemStateChanged(ItemEvent e){
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public void itemStateChanged(ItemEvent e) {
+        throw new UnsupportedOperationException("Menu: not supported yet.");
     }
 
     @Override
-    public void actionPerformed(ActionEvent e){
-        System.out.println("actionPerformed: " + e.getActionCommand());
+    public void actionPerformed(ActionEvent e) {
         String command = e.getActionCommand();
         world.applyCommand(command);
     }

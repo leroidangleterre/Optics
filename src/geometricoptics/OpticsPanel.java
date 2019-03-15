@@ -8,6 +8,7 @@ package geometricoptics;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Polygon;
 import javax.swing.JPanel;
 
 /**
@@ -17,7 +18,7 @@ import javax.swing.JPanel;
  * This panel is used to draw the optical elements such as lenses, as well as
  * the light rays. The user can scroll and zoom in the image.
  */
-public class OpticsPanel extends JPanel{
+public class OpticsPanel extends JPanel {
 
     // The elements displayed
     private World world;
@@ -27,7 +28,7 @@ public class OpticsPanel extends JPanel{
 
     private boolean isCurrentlyScrolling;
 
-    public OpticsPanel(World w){
+    public OpticsPanel(World w) {
         super();
 
         world = w;
@@ -53,22 +54,22 @@ public class OpticsPanel extends JPanel{
     }
 
     @Override
-    public void paintComponent(Graphics g){
+    public void paintComponent(Graphics g) {
         g.setColor(Color.white);
         g.fillRect(0, 0, g.getClipBounds().width, g.getClipBounds().height);
         world.paint(g, zoomScroll.getX(), zoomScroll.getY(), zoomScroll.getZoom());
 
     }
 
-    public void scroll(float dx, float dy){
+    public void scroll(float dx, float dy) {
         zoomScroll.scroll(dx, dy);
     }
 
-    public void setCurrentScroll(boolean b){
+    public void setCurrentScroll(boolean b) {
         isCurrentlyScrolling = b;
     }
 
-    public boolean isCurrentlyScrolling(){
+    public boolean isCurrentlyScrolling() {
         return isCurrentlyScrolling;
     }
 }

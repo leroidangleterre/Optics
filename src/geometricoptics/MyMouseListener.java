@@ -13,18 +13,18 @@ import java.awt.event.MouseMotionListener;
  *
  * @author arthurmanoha
  */
-public class MyMouseListener implements MouseListener, MouseMotionListener{
+public class MyMouseListener implements MouseListener, MouseMotionListener {
 
     private World world;
     private ZoomScroll zs;
     private int lastX, lastY;
     private OpticsPanel opticsPanel;
 
-    private float xMouse, yMouse;
+//    private float xMouse, yMouse;
     private float xLeftClick, yLeftClick, xRightClick, yRightClick;
     private boolean leftClickActive, rightClickActive;
 
-    public MyMouseListener(ZoomScroll zsParam, World w, OpticsPanel panel){
+    public MyMouseListener(ZoomScroll zsParam, World w, OpticsPanel panel) {
         zs = zsParam;
         world = w;
         lastX = -1;
@@ -41,82 +41,82 @@ public class MyMouseListener implements MouseListener, MouseMotionListener{
         opticsPanel = panel;
     }
 
-    public MyMouseListener(ZoomScroll zsParam, World w){
+    public MyMouseListener(ZoomScroll zsParam, World w) {
         this(zsParam, w, null);
     }
 
-    public MyMouseListener(ZoomScroll zsParam){
+    public MyMouseListener(ZoomScroll zsParam) {
         this(zsParam, null);
     }
 
     @Override
-    public void mouseClicked(MouseEvent e){
+    public void mouseClicked(MouseEvent e) {
     }
 
     @Override
-    public void mousePressed(MouseEvent e){
+    public void mousePressed(MouseEvent e) {
 
         float xClickInWorld = (e.getX() - zs.getX()) / zs.getZoom();
         float yClickInWorld = (e.getY() - zs.getY()) / zs.getZoom();
 
-        switch(e.getButton()){
-        case 1:
-            // Place an object, or start selecting things
-            world.receiveLeftClick(xClickInWorld, yClickInWorld);
-            leftClickActive = true;
-            break;
-        case 2:
-            // Start scrolling
-            opticsPanel.setCurrentScroll(true);
-            break;
-        case 3:
-            if(world.pointIsInSelectedObject(xClickInWorld, yClickInWorld)){
-                // Start rotating selection
-                world.receiveRightClick(xClickInWorld, yClickInWorld);
-            } else{
+        switch (e.getButton()) {
+            case 1:
+                // Place an object, or start selecting things
+                world.receiveLeftClick(xClickInWorld, yClickInWorld);
+                leftClickActive = true;
+                break;
+            case 2:
                 // Start scrolling
                 opticsPanel.setCurrentScroll(true);
-            }
-            rightClickActive = true;
-            break;
+                break;
+            case 3:
+                if (world.pixelIsInObject(e.getX(), e.getY())) {
+                    // Start rotating selection
+                    world.receiveRightClick(xClickInWorld, yClickInWorld);
+                } else {
+                    // Start scrolling
+                    opticsPanel.setCurrentScroll(true);
+                }
+                rightClickActive = true;
+                break;
         }
     }
 
     @Override
-    public void mouseReleased(MouseEvent e){
+    public void mouseReleased(MouseEvent e) {
         opticsPanel.setCurrentScroll(false);
         float xClickInWorld = (e.getX() - zs.getX()) / zs.getZoom();
         float yClickInWorld = (e.getY() - zs.getY()) / zs.getZoom();
-        switch(e.getButton()){
-        case 1:
-            world.receiveLeftUnclick(xClickInWorld, yClickInWorld);
-            leftClickActive = false;
-            break;
-        case 3:
-            world.receiveRightUnclick(xClickInWorld, yClickInWorld);
-            rightClickActive = false;
-            break;
-        default:
-            break;
+        switch (e.getButton()) {
+            case 1:
+                world.receiveLeftUnclick(xClickInWorld, yClickInWorld);
+                leftClickActive = false;
+                break;
+            case 3:
+                world.receiveRightUnclick(xClickInWorld, yClickInWorld);
+                rightClickActive = false;
+                break;
+            default:
+                break;
         }
     }
 
     @Override
-    public void mouseEntered(MouseEvent e){
+    public void mouseEntered(MouseEvent e) {
     }
 
     @Override
-    public void mouseExited(MouseEvent e){
+    public void mouseExited(MouseEvent e) {
     }
 
     @Override
-    public void mouseDragged(MouseEvent e){
+    public void mouseDragged(MouseEvent e) {
         float xWorld = (e.getX() - zs.getX()) / zs.getZoom();
         float yWorld = (e.getY() - zs.getY()) / zs.getZoom();
 
-        if(opticsPanel.isCurrentlyScrolling()){
+        if (opticsPanel.isCurrentlyScrolling()) {
             zs.scroll(e.getX() - lastX, e.getY() - lastY);
-        } else{
+        } else {
             world.receiveMouseMove(xWorld, yWorld);
         }
         lastX = e.getX();
@@ -124,7 +124,7 @@ public class MyMouseListener implements MouseListener, MouseMotionListener{
     }
 
     @Override
-    public void mouseMoved(MouseEvent e){
+    public void mouseMoved(MouseEvent e) {
         float xWorld = (e.getX() - zs.getX()) / zs.getZoom();
         float yWorld = (e.getY() - zs.getY()) / zs.getZoom();
 
@@ -133,7 +133,7 @@ public class MyMouseListener implements MouseListener, MouseMotionListener{
         lastY = e.getY();
     }
 
-    public void setOpticsPanel(OpticsPanel p){
+    public void setOpticsPanel(OpticsPanel p) {
         this.opticsPanel = p;
     }
 }
