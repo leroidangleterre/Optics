@@ -12,63 +12,50 @@ import java.awt.Graphics;
  *
  * @author arthurmanoha
  */
-public class Lens extends OpticElement{
+public class Lens extends OpticElement {
 
-    public Lens(){
+    public Lens() {
         super();
         size = 10;
+        polygon.addPoint(0, 3);
+        polygon.addPoint(1, 1);
+        polygon.addPoint(1, -1);
+        polygon.addPoint(0, -3);
+        polygon.addPoint(-1, -1);
+        polygon.addPoint(-1, 1);
+        color = Color.blue;
     }
 
-    public Lens(float x, float y){
+    public Lens(float x, float y) {
         this();
         this.x = x;
         this.y = y;
     }
 
-    public Lens(Lens toCopy){
-        super();
-        this.size = toCopy.size;
+    public Lens(Lens toCopy) {
+
+        this.polygon = toCopy.polygon.clone();
+        this.color = toCopy.color;
         this.x = toCopy.x;
         this.y = toCopy.y;
+        this.rotation = toCopy.rotation;
     }
 
-    @Override
-    public Lens clone(){
-        return new Lens(this);
-    }
-
-    @Override
-    public void paint(Graphics g, float x0, float y0, float zoom){
-        g.setColor(Color.blue);
-
-        float xApp = this.x * zoom + x0;
-        float yApp = this.y * zoom + y0;
-        float halfSize = size / 2;
-        g.fillRect((int) (xApp - halfSize * zoom),
-                (int) (yApp - halfSize * zoom),
-                (int) (2 * halfSize * zoom),
-                (int) (2 * halfSize * zoom));
-
-        if(this.isSelected()){
-            // Add a black lining around the drawing.
-            g.setColor(Color.black);
-            g.drawRect((int) (xApp - halfSize * zoom),
-                    (int) (yApp - halfSize * zoom),
-                    (int) (2 * halfSize * zoom),
-                    (int) (2 * halfSize * zoom));
-        }
-
+    public OpticElement clone() {
+        Lens copy = new Lens(this);
+        return copy;
     }
 
     /**
      * This method tells if a given set of coordinates is contained in the
      * element.
      *
-     * @param x
-     * @param y
+     * @param xPoint
+     * @param yPoint
      * @return
      */
-    public boolean containsPoint(float xPoint, float yPoint){
+    @Override
+    public boolean containsPoint(float xPoint, float yPoint) {
 
         float xMin = x - size / 2;
         float xMax = x + size / 2;
