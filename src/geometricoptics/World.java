@@ -102,11 +102,13 @@ public class World {
 
     public void paint(Graphics g, float x0, float y0, float zoom) {
 
+        int graphicsHeight = g.getClipBounds().height;
+
         // Paint the axes
         float axisLength = 10;
         g.setColor(Color.black);
-        g.drawLine((int) x0, (int) y0, (int) (x0 + zoom * axisLength), (int) y0);
-        g.drawLine((int) x0, (int) y0, (int) x0, (int) (y0 + zoom * axisLength));
+        g.drawLine((int) x0, graphicsHeight - (int) y0, (int) (x0 + zoom * axisLength), graphicsHeight - (int) y0);
+        g.drawLine((int) x0, graphicsHeight - (int) y0, (int) x0, graphicsHeight - (int) (y0 + zoom * axisLength));
 
         for (OpticElement element : elements) {
             element.paint(g, x0, y0, zoom);
@@ -123,9 +125,9 @@ public class World {
             float yTop = Math.max(lastYMouse, yLeftClick);
 
             float xLeftApp = xLeft * zoom + x0;
-            float yBottomApp = yBottom * zoom + y0;
+            float yBottomApp = graphicsHeight - (yBottom * zoom + y0);
             float xRightApp = xRight * zoom + x0;
-            float yTopApp = yTop * zoom + y0;
+            float yTopApp = graphicsHeight - (yTop * zoom + y0);
 
             g.setColor(Color.orange);
             g.drawLine((int) xLeftApp, (int) yBottomApp, (int) xRightApp, (int) yBottomApp);
@@ -262,7 +264,34 @@ public class World {
         return null;
     }
 
-    public void rotateAllSelectedObjects(float xCenter, float yCenter, float angleIncrement) {
+    /**
+     * Rotate each selected element around their common barycenter or around
+     * itself.
+     */
+    public void rotateAllSelectedObjects(float angleIncrement, boolean aroundBarycenter) {
+        if (aroundBarycenter) {
+            float xCenter = findBarycenterOfSelectionX();
+            float yCenter = findBarycenterOfSelectionY();
+
+            for (OpticElement e : elements) {
+                if (e.isSelected) {
+                    e.rotate(angleIncrement, xCenter, yCenter);
+                }
+            }
+        } else {
+            for (OpticElement e : elements) {
+                if (e.isSelected) {
+                    e.rotate(angleIncrement);
+                }
+            }
+        }
+        triggerListeners();
+    }
+
+    /**
+     * Rotate all selected elements around the specified point.
+     */
+    public void rotateAllSelectedObjects(float angleIncrement) {
         for (OpticElement e : elements) {
             if (e.isSelected) {
                 e.rotate(angleIncrement);

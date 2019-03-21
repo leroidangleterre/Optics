@@ -30,6 +30,7 @@ public abstract class OpticElement implements Cloneable {
     protected FloatPolygon polygon;
 
     protected Color color;
+    private Polygon appPoly;
 
     public OpticElement() {
         x = 0;
@@ -41,6 +42,7 @@ public abstract class OpticElement implements Cloneable {
         nbElements++;
         color = Color.black;
         polygon = new FloatPolygon();
+        appPoly = null;
     }
 
     public OpticElement(OpticElement toCopy) {
@@ -79,17 +81,17 @@ public abstract class OpticElement implements Cloneable {
         Graphics2D g2d = (Graphics2D) g;
         g2d.setColor(this.color);
 
-        Polygon appPoly = computeAppPolygon(x0, y0, zoom);
-        g.fillPolygon(appPoly);
+        computeAppPolygon(x0, y0, zoom, g.getClipBounds().height);
+        g2d.fillPolygon(appPoly);
 
         if (isSelected) {
-            g.setColor(Color.BLACK);
-            g.drawPolygon(appPoly);
+            g2d.setColor(Color.BLACK);
+            g2d.drawPolygon(appPoly);
         }
     }
 
-    private Polygon computeAppPolygon(float x0, float y0, float zoom) {
-        Polygon appPoly = new Polygon();
+    private void computeAppPolygon(float x0, float y0, float zoom, int graphicsHeight) {
+        appPoly = new Polygon();
         for (int i = 0; i < polygon.getNbPoints(); i++) {
             float x = polygon.xTab[i];
             float y = polygon.yTab[i];
@@ -106,10 +108,9 @@ public abstract class OpticElement implements Cloneable {
             float yReal = yRotation + this.y;
 
             int xApp = (int) (xReal * zoom + x0);
-            int yApp = (int) (yReal * zoom + y0);
+            int yApp = graphicsHeight - (int) (yReal * zoom + y0);
             appPoly.addPoint(xApp, yApp);
         }
-        return appPoly;
     }
 
     /**
@@ -161,5 +162,22 @@ public abstract class OpticElement implements Cloneable {
      */
     public void rotate(float dAngle) {
         this.rotation += dAngle;
+    }
+
+    /**
+     * Rotate the object around the given point.
+     *
+     */
+    public void rotate(float dAngle, float x0, float y0) {
+
+        // Turn the object
+        this.rotate(dAngle);
+
+        // Translate the object
+        float dx = this.x - x0;
+        float dy = this.y - y0;
+
+        this.x = (float) (x0 + dx * Math.cos(dAngle) - dy * Math.sin(dAngle));
+        this.y = (float) (y0 + dx * Math.sin(dAngle) + dy * Math.cos(dAngle));
     }
 }

@@ -15,9 +15,11 @@ import java.awt.event.KeyListener;
 public class MyKeyListener implements KeyListener {
 
     private World world;
+    private boolean nbCtrlPressed;
 
     public MyKeyListener(World w) {
         world = w;
+        nbCtrlPressed = false;
     }
 
     @Override
@@ -39,18 +41,39 @@ public class MyKeyListener implements KeyListener {
                 world.deleteSelected();
                 break;
             case KeyEvent.VK_RIGHT:
-                world.rotateAllSelectedObjects(0, 0, angleIncrement);
+                if (nbCtrlPressed) {
+                    world.rotateAllSelectedObjects(-angleIncrement);
+                } else {
+                    world.rotateAllSelectedObjects(-angleIncrement, true);
+                }
                 System.out.println("rotate right");
                 break;
             case KeyEvent.VK_LEFT:
-                world.rotateAllSelectedObjects(0, 0, -angleIncrement);
+                if (nbCtrlPressed) {
+                    world.rotateAllSelectedObjects(angleIncrement);
+                } else {
+                    world.rotateAllSelectedObjects(angleIncrement, true);
+                }
                 System.out.println("rotate left");
+                break;
+
+            case KeyEvent.VK_CONTROL:
+                nbCtrlPressed = true;
+                break;
+            default:
                 break;
         }
     }
 
     @Override
-    public void keyReleased(KeyEvent e) {
+    public void keyReleased(KeyEvent e
+    ) {
+        switch (e.getKeyCode()) {
+            case KeyEvent.VK_CONTROL:
+                nbCtrlPressed = false;
+                break;
+            default:
+                break;
+        }
     }
-
 }
