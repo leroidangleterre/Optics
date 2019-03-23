@@ -43,7 +43,7 @@ public class OpticsPanel extends JPanel {
         this.zoomScroll.addListener(this);
         zoomScroll.setX(500);
         zoomScroll.setY(350);
-        zoomScroll.setZoom(7.9f);
+        zoomScroll.setZoom(50f);
 
         world.addListener(this);
 
