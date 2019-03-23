@@ -26,10 +26,9 @@ public class World {
     private boolean selectionBeingMoved = false;
     private boolean selectionBeingRotated = false;
     private boolean singleObjectBeingRotated = false;
-    private OpticElement rotatingObject = null;
     private float xRotationCenter;
     private float yRotationCenter;
-    private float initialAngle, currentAngle;
+    private float previousAngle, currentAngle;
 
     private ArrayList<JComponent> listeners;
 
@@ -53,6 +52,9 @@ public class World {
         rightClickActive = false;
 
         clones = new ArrayList<>();
+
+        elements.add(new Lens(5, 1));
+        elements.add(new Laser(-5, 0));
     }
 
     public void addListener(JComponent component) {
@@ -102,11 +104,13 @@ public class World {
 
     public void paint(Graphics g, float x0, float y0, float zoom) {
 
+        int graphicsHeight = g.getClipBounds().height;
+
         // Paint the axes
         float axisLength = 10;
         g.setColor(Color.black);
-        g.drawLine((int) x0, (int) y0, (int) (x0 + zoom * axisLength), (int) y0);
-        g.drawLine((int) x0, (int) y0, (int) x0, (int) (y0 + zoom * axisLength));
+        g.drawLine((int) x0, graphicsHeight - (int) y0, (int) (x0 + zoom * axisLength), graphicsHeight - (int) y0);
+        g.drawLine((int) x0, graphicsHeight - (int) y0, (int) x0, graphicsHeight - (int) (y0 + zoom * axisLength));
 
         for (OpticElement element : elements) {
             element.paint(g, x0, y0, zoom);
@@ -123,9 +127,9 @@ public class World {
             float yTop = Math.max(lastYMouse, yLeftClick);
 
             float xLeftApp = xLeft * zoom + x0;
-            float yBottomApp = yBottom * zoom + y0;
+            float yBottomApp = graphicsHeight - (yBottom * zoom + y0);
             float xRightApp = xRight * zoom + x0;
-            float yTopApp = yTop * zoom + y0;
+            float yTopApp = graphicsHeight - (yTop * zoom + y0);
 
             g.setColor(Color.orange);
             g.drawLine((int) xLeftApp, (int) yBottomApp, (int) xRightApp, (int) yBottomApp);
@@ -134,6 +138,14 @@ public class World {
             g.drawLine((int) xRightApp, (int) yBottomApp, (int) xRightApp, (int) yTopApp);
         }
 
+        // If a rotation is ongoing:
+        if (selectionBeingRotated) {
+            g.setColor(Color.red);
+            int radius = 3;
+            int xApp = (int) (xRotationCenter * zoom + x0);
+            int yApp = (int) (graphicsHeight - (yRotationCenter * zoom + y0));
+            g.fillRect(xApp - radius, yApp - radius, 2 * radius, 2 * radius);
+        }
     }
 
     /* Select everything if not everything is selected yet;
@@ -262,7 +274,36 @@ public class World {
         return null;
     }
 
-    public void rotateAllSelectedObjects(float xCenter, float yCenter, float angleIncrement) {
+    /**
+     * Rotate each selected element around their common barycenter or around
+     * itself.
+     */
+    public void rotateAllSelectedObjects(float angleIncrement, boolean aroundBarycenter) {
+        if (aroundBarycenter) {
+            float xCenter = findBarycenterOfSelectionX();
+            float yCenter = findBarycenterOfSelectionY();
+
+            System.out.println("rotation center: (" + xCenter + ", " + yCenter + ");");
+            for (OpticElement e : elements) {
+                if (e.isSelected) {
+                    e.rotate(angleIncrement, xCenter, yCenter);
+                }
+            }
+        } else {
+            System.out.println("no common rotation center");
+            for (OpticElement e : elements) {
+                if (e.isSelected) {
+                    e.rotate(angleIncrement);
+                }
+            }
+        }
+        triggerListeners();
+    }
+
+    /**
+     * Rotate all selected elements around the specified point.
+     */
+    public void rotateAllSelectedObjects(float angleIncrement) {
         for (OpticElement e : elements) {
             if (e.isSelected) {
                 e.rotate(angleIncrement);
@@ -324,7 +365,7 @@ public class World {
          */
 
         if (pointIsInObject(x, y)) {
-            if (pointIsInSelectedObject(x, y)) {
+            if (!pointIsInSelectedObject(x, y)) {
                 // Select this object, un-select all other objects.
                 for (OpticElement e : elements) {
                     e.isSelected = false;
@@ -334,7 +375,6 @@ public class World {
             // Else keep the current selection as is.
 
             selectionBeingRotated = true;
-            singleObjectBeingRotated = false;
             // Find the coordinates of the center of the rotation
             xRotationCenter = findBarycenterOfSelectionX();
             yRotationCenter = findBarycenterOfSelectionY();
@@ -345,7 +385,11 @@ public class World {
             // Find the initial slope of the line going from the center of rotation to the mouse.
             float dx = xRightClick - xRotationCenter;
             float dy = yRightClick - yRotationCenter;
-            initialAngle = (float) Math.atan(dy / dx);
+            if (dx >= 0) {
+                previousAngle = (float) Math.atan(dy / dx);
+            } else {
+                previousAngle = (float) (Math.atan(dy / dx) + Math.PI);
+            }
         }
     }
 
@@ -374,19 +418,31 @@ public class World {
             e.translate(dx, dy);
         }
 
-        // Rotate one or more objects only if the right click happens inside an object.
-        if (singleObjectBeingRotated) {
-            System.out.println("Rotating single object.");
-            rotatingObject = getObjectAt(x, y);
-
-            float dxRotation = xRightClick - xRotationCenter;
-            float dyRotation = yRightClick - yRotationCenter;
-            currentAngle = (float) Math.atan(dy / dx);
-            rotatingObject.setRotation(currentAngle - initialAngle);
-        }
+        // Rotate what needs to turn, around the predefined center of rotation.
         if (selectionBeingRotated) {
-            System.out.println("Rotating all selection.");
 
+            float dxRotation = x - xRotationCenter;
+            float dyRotation = y - yRotationCenter;
+            if (dxRotation >= 0) {
+                currentAngle = (float) Math.atan(dyRotation / dxRotation);
+            } else {
+                currentAngle = (float) Math.atan(dyRotation / dxRotation) + (float) Math.PI;
+            }
+            for (OpticElement rotatingObject : elements) {
+                if (rotatingObject.isSelected) {
+                    float dTheta = currentAngle - previousAngle;
+                    // Th object turns around its own gravity center;
+                    rotatingObject.rotate(dTheta);
+                    // it then translates around the common rotation barycenter (which is its own center in case of a single object)
+                    float dxTranslationBefore = rotatingObject.x - xRotationCenter;
+                    float dyTranslationBefore = rotatingObject.y - yRotationCenter;
+                    rotatingObject.translate(-dxTranslationBefore, -dyTranslationBefore);
+                    float dxTranslationAfter = (float) (dxTranslationBefore * Math.cos(dTheta) - dyTranslationBefore * Math.sin(dTheta));
+                    float dyTranslationAfter = (float) (dxTranslationBefore * Math.sin(dTheta) + dyTranslationBefore * Math.cos(dTheta));
+                    rotatingObject.translate(dxTranslationAfter, dyTranslationAfter);
+                }
+            }
+            previousAngle = currentAngle;
         }
         lastXMouse = x;
         lastYMouse = y;

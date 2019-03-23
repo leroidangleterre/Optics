@@ -17,27 +17,23 @@ public class MyMouseListener implements MouseListener, MouseMotionListener {
 
     private World world;
     private ZoomScroll zs;
-    private int lastX, lastY;
+//    private int lastX, lastY;
     private OpticsPanel opticsPanel;
 
 //    private float xMouse, yMouse;
-    private float xLeftClick, yLeftClick, xRightClick, yRightClick;
-    private boolean leftClickActive, rightClickActive;
-
+//    private float xLeftClick, yLeftClick, xRightClick, yRightClick;
+//    private boolean leftClickActive, rightClickActive;
     public MyMouseListener(ZoomScroll zsParam, World w, OpticsPanel panel) {
         zs = zsParam;
         world = w;
-        lastX = -1;
-        lastY = -1;
         opticsPanel = null;
 
-        xLeftClick = -1;
-        yLeftClick = -1;
-        xRightClick = -1;
-        yRightClick = -1;
-        leftClickActive = false;
-        rightClickActive = false;
-
+//        xLeftClick = -1;
+//        yLeftClick = -1;
+//        xRightClick = -1;
+//        yRightClick = -1;
+//        leftClickActive = false;
+//        rightClickActive = false;
         opticsPanel = panel;
     }
 
@@ -56,28 +52,19 @@ public class MyMouseListener implements MouseListener, MouseMotionListener {
     @Override
     public void mousePressed(MouseEvent e) {
 
-        float xClickInWorld = (e.getX() - zs.getX()) / zs.getZoom();
-        float yClickInWorld = (e.getY() - zs.getY()) / zs.getZoom();
-
         switch (e.getButton()) {
             case 1:
                 // Place an object, or start selecting things
-                world.receiveLeftClick(xClickInWorld, yClickInWorld);
-                leftClickActive = true;
+                opticsPanel.receiveLeftClick(e.getX(), e.getY());
+//                leftClickActive = true;
                 break;
             case 2:
                 // Start scrolling
                 opticsPanel.setCurrentScroll(true);
                 break;
             case 3:
-                if (world.pixelIsInObject(e.getX(), e.getY())) {
-                    // Start rotating selection
-                    world.receiveRightClick(xClickInWorld, yClickInWorld);
-                } else {
-                    // Start scrolling
-                    opticsPanel.setCurrentScroll(true);
-                }
-                rightClickActive = true;
+                opticsPanel.receiveRightClick(e.getX(), e.getY());
+//                rightClickActive = true;
                 break;
         }
     }
@@ -85,16 +72,14 @@ public class MyMouseListener implements MouseListener, MouseMotionListener {
     @Override
     public void mouseReleased(MouseEvent e) {
         opticsPanel.setCurrentScroll(false);
-        float xClickInWorld = (e.getX() - zs.getX()) / zs.getZoom();
-        float yClickInWorld = (e.getY() - zs.getY()) / zs.getZoom();
         switch (e.getButton()) {
             case 1:
-                world.receiveLeftUnclick(xClickInWorld, yClickInWorld);
-                leftClickActive = false;
+                opticsPanel.receiveLeftUnclick(e.getX(), e.getY());
+//                leftClickActive = false;
                 break;
             case 3:
-                world.receiveRightUnclick(xClickInWorld, yClickInWorld);
-                rightClickActive = false;
+                opticsPanel.receiveRightUnclick(e.getX(), e.getY());
+//                rightClickActive = false;
                 break;
             default:
                 break;
@@ -111,26 +96,12 @@ public class MyMouseListener implements MouseListener, MouseMotionListener {
 
     @Override
     public void mouseDragged(MouseEvent e) {
-        float xWorld = (e.getX() - zs.getX()) / zs.getZoom();
-        float yWorld = (e.getY() - zs.getY()) / zs.getZoom();
-
-        if (opticsPanel.isCurrentlyScrolling()) {
-            zs.scroll(e.getX() - lastX, e.getY() - lastY);
-        } else {
-            world.receiveMouseMove(xWorld, yWorld);
-        }
-        lastX = e.getX();
-        lastY = e.getY();
+        opticsPanel.receiveMouseMove(e.getX(), e.getY());
     }
 
     @Override
     public void mouseMoved(MouseEvent e) {
-        float xWorld = (e.getX() - zs.getX()) / zs.getZoom();
-        float yWorld = (e.getY() - zs.getY()) / zs.getZoom();
-
-        world.receiveMouseMove(xWorld, yWorld);
-        lastX = e.getX();
-        lastY = e.getY();
+        opticsPanel.receiveMouseMove(e.getX(), e.getY());
     }
 
     public void setOpticsPanel(OpticsPanel p) {

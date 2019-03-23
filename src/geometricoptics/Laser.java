@@ -67,11 +67,9 @@ public class Laser extends OpticElement {
     public boolean containsPixel(int xPixel, int yPixel) {
 
         if (super.containsPixel(xPixel, yPixel)) {
-            this.color = Color.red;
             System.out.println("contains pixel.");
             return true;
         } else {
-            this.color = Color.blue;
             System.out.println("does NOT contain pixel.");
             return false;
         }

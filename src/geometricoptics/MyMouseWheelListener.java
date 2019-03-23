@@ -12,31 +12,31 @@ import java.awt.event.MouseWheelListener;
  *
  * @author arthurmanoha
  */
-public class MyMouseWheelListener implements MouseWheelListener{
+public class MyMouseWheelListener implements MouseWheelListener {
 
     private World world;
     private final ZoomScroll zs;
-    float zoomFact = 1.03f;
+    private OpticsPanel opticsPanel;
 
-    public MyMouseWheelListener(ZoomScroll zsParam, World w){
-        zs = zsParam;
-        world = w;
+    public MyMouseWheelListener(ZoomScroll zsParam, World w) {
+        this(zsParam, w, null);
     }
 
-    public MyMouseWheelListener(ZoomScroll zsParam){
+    public MyMouseWheelListener(ZoomScroll zsParam, World w, OpticsPanel panel) {
+        zs = zsParam;
+        world = w;
+        opticsPanel = panel;
+    }
+
+    public MyMouseWheelListener(ZoomScroll zsParam) {
         this(zsParam, null);
     }
 
     // The zoom and scroll are modified when the mouse wheel is used.
     @Override
-    public void mouseWheelMoved(MouseWheelEvent e){
+    public void mouseWheelMoved(MouseWheelEvent e) {
         int rotation = e.getWheelRotation(); // +1: zoom out; -1: zoom in.
-        float fact = (rotation > 0) ? (1 / zoomFact) : zoomFact;
-
-        zs.increaseZoom(fact);
-
-        zs.setX(-(fact * (e.getX() - zs.getX()) - e.getX()));
-        zs.setY(-(fact * (e.getY() - zs.getY()) - e.getY()));
+        opticsPanel.receiveMouseWheelMoved(e.getX(), e.getY(), rotation);
     }
 
 }

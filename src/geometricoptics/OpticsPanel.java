@@ -28,6 +28,10 @@ public class OpticsPanel extends JPanel {
 
     private boolean isCurrentlyScrolling;
 
+    private int lastX, lastY;
+
+    float zoomFact = 1.03f;
+
     public OpticsPanel(World w) {
         super();
 
@@ -39,7 +43,7 @@ public class OpticsPanel extends JPanel {
         this.zoomScroll.addListener(this);
         zoomScroll.setX(500);
         zoomScroll.setY(350);
-        zoomScroll.setZoom(7.9f);
+        zoomScroll.setZoom(50f);
 
         world.addListener(this);
 
@@ -47,10 +51,12 @@ public class OpticsPanel extends JPanel {
 
         this.addMouseListener(mouseListener);
         this.addMouseMotionListener(mouseListener);
-        this.addMouseWheelListener(new MyMouseWheelListener(zoomScroll, w));
+        this.addMouseWheelListener(new MyMouseWheelListener(zoomScroll, w, this));
         this.addKeyListener(new MyKeyListener(w));
 
         isCurrentlyScrolling = false;
+        lastX = -1;
+        lastY = -1;
     }
 
     @Override
@@ -71,5 +77,80 @@ public class OpticsPanel extends JPanel {
 
     public boolean isCurrentlyScrolling() {
         return isCurrentlyScrolling;
+    }
+
+    public void receiveLeftClick(int xClick, int yClick) {
+
+        int height = getBounds().height;
+
+        float xClickInWorld = (xClick - zoomScroll.getX()) / zoomScroll.getZoom();
+        float yClickInWorld = (height - yClick - zoomScroll.getY()) / zoomScroll.getZoom();
+        world.receiveLeftClick(xClickInWorld, yClickInWorld);
+    }
+
+    public void receiveRightClick(int xClick, int yClick) {
+
+        int height = getBounds().height;
+
+        float xClickInWorld = (xClick - zoomScroll.getX()) / zoomScroll.getZoom();
+        float yClickInWorld = (height - yClick - zoomScroll.getY()) / zoomScroll.getZoom();
+        world.receiveRightClick(xClickInWorld, yClickInWorld);
+    }
+
+    public void receiveLeftUnclick(int xClick, int yClick) {
+
+        int height = getBounds().height;
+        float xUnclickInWorld = (xClick - zoomScroll.getX()) / zoomScroll.getZoom();
+        float yUnclickInWorld = (height - yClick - zoomScroll.getY()) / zoomScroll.getZoom();
+        world.receiveLeftUnclick(xUnclickInWorld, yUnclickInWorld);
+    }
+
+    public void receiveRightUnclick(int xClick, int yClick) {
+
+        int height = getBounds().height;
+        float xUnclickInWorld = (xClick - zoomScroll.getX()) / zoomScroll.getZoom();
+        float yUnclickInWorld = (height - yClick - zoomScroll.getY()) / zoomScroll.getZoom();
+        world.receiveRightUnclick(xUnclickInWorld, yUnclickInWorld);
+    }
+
+    public void receiveMouseMove(int x, int y) {
+
+        if (isCurrentlyScrolling) {
+            int dx = x - lastX;
+            int dy = -(y - lastY);
+            zoomScroll.scroll(dx, dy);
+        } else {
+            int height = getBounds().height;
+            float xMouseInWorld = (x - zoomScroll.getX()) / zoomScroll.getZoom();
+            float yMouseInWorld = (height - y - zoomScroll.getY()) / zoomScroll.getZoom();
+            world.receiveMouseMove(xMouseInWorld, yMouseInWorld);
+        }
+        lastX = x;
+        lastY = y;
+    }
+
+    public void receiveMouseDragged(int x, int y) {
+
+        int height = getBounds().height;
+        float xMouseInWorld = (x - zoomScroll.getX()) / zoomScroll.getZoom();
+        float yMouseInWorld = (height - y - zoomScroll.getY()) / zoomScroll.getZoom();
+
+        if (isCurrentlyScrolling()) {
+            zoomScroll.scroll(x - lastX, y - lastY);
+        } else {
+            world.receiveMouseMove(xMouseInWorld, yMouseInWorld);
+        }
+        lastX = x;
+        lastY = y;
+    }
+
+    public void receiveMouseWheelMoved(int x, int y, int nbRotationSteps) {
+
+        int height = getBounds().height;
+        float fact = (nbRotationSteps > 0) ? (1 / zoomFact) : zoomFact;
+
+        zoomScroll.setX(x + fact * (zoomScroll.getX() - x));
+        zoomScroll.setY(height - y - fact * (height - zoomScroll.getY() - y));
+        zoomScroll.setZoom(fact * zoomScroll.getZoom());
     }
 }
