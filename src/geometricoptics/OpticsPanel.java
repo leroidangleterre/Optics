@@ -10,6 +10,8 @@ import java.awt.Dimension;
 import java.awt.event.MouseAdapter;
 import java.awt.Graphics;
 import java.awt.Polygon;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseWheelEvent;
 import javax.swing.JPanel;
 
 /**
@@ -156,6 +158,7 @@ public class OpticsPanel extends JPanel {
     }
 
     private class OpticsPanelMouseAdapter extends MouseAdapter {
+
         @Override
         public void mouseWheelMoved(MouseWheelEvent e) {
             int rotation = e.getWheelRotation(); // +1: zoom out; -1: zoom in.
