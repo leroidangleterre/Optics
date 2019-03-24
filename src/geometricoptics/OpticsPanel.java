@@ -7,8 +7,11 @@ package geometricoptics;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.event.MouseAdapter;
 import java.awt.Graphics;
 import java.awt.Polygon;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseWheelEvent;
 import javax.swing.JPanel;
 
 /**
@@ -47,11 +50,11 @@ public class OpticsPanel extends JPanel {
 
         world.addListener(this);
 
-        MyMouseListener mouseListener = new MyMouseListener(zoomScroll, w, this);
+        OpticsPanelMouseAdapter mouseAdapter = new OpticsPanelMouseAdapter();
 
-        this.addMouseListener(mouseListener);
-        this.addMouseMotionListener(mouseListener);
-        this.addMouseWheelListener(new MyMouseWheelListener(zoomScroll, w, this));
+        this.addMouseListener(mouseAdapter);
+        this.addMouseMotionListener(mouseAdapter);
+        this.addMouseWheelListener(mouseAdapter);
         this.addKeyListener(new MyKeyListener(w));
 
         isCurrentlyScrolling = false;
@@ -152,5 +155,60 @@ public class OpticsPanel extends JPanel {
         zoomScroll.setX(x + fact * (zoomScroll.getX() - x));
         zoomScroll.setY(height - y - fact * (height - zoomScroll.getY() - y));
         zoomScroll.setZoom(fact * zoomScroll.getZoom());
+    }
+
+    private class OpticsPanelMouseAdapter extends MouseAdapter {
+
+        @Override
+        public void mouseWheelMoved(MouseWheelEvent e) {
+            int rotation = e.getWheelRotation(); // +1: zoom out; -1: zoom in.
+            receiveMouseWheelMoved(e.getX(), e.getY(), rotation);
+        }
+
+        @Override
+        public void mouseDragged(MouseEvent e) {
+            receiveMouseMove(e.getX(), e.getY());
+        }
+
+        @Override
+        public void mouseMoved(MouseEvent e) {
+            receiveMouseMove(e.getX(), e.getY());
+        }
+
+        @Override
+        public void mousePressed(MouseEvent e) {
+            switch (e.getButton()) {
+                case 1:
+                    // Place an object, or start selecting things
+                    receiveLeftClick(e.getX(), e.getY());
+                    // leftClickActive = true;
+                    break;
+                case 2:
+                    // Start scrolling
+                    setCurrentScroll(true);
+                    break;
+                case 3:
+                    receiveRightClick(e.getX(), e.getY());
+                    //  rightClickActive = true;
+                    break;
+            }
+        }
+
+        @Override
+        public void mouseReleased(MouseEvent e) {
+            setCurrentScroll(false);
+            switch (e.getButton()) {
+                case 1:
+                    receiveLeftUnclick(e.getX(), e.getY());
+                    // leftClickActive = false;
+                    break;
+                case 3:
+                    receiveRightUnclick(e.getX(), e.getY());
+                    // rightClickActive = false;
+                    break;
+                default:
+                    break;
+            }
+        }
     }
 }
