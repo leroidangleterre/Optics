@@ -53,32 +53,31 @@ public class FloatPolygon {
         return nbPoints;
     }
 
-    /**
-     * Get the polygon transformed by the given translation and rotation.
-     *
-     * @param x0
-     * @param y0
-     * @param zoom
-     * @param angle
-     * @return
-     */
-    public void computeApparentPolygon(float x0, float y0, float zoom, float angle) {
-        // Apply the rotation on all of these points.
-        for (int i = 0; i < nbPoints; i++) {
-            float newX = (float) (xTab[i] * Math.cos(angle) - yTab[i] * Math.sin(angle));
-            float newY = (float) (xTab[i] * Math.sin(angle) + yTab[i] * Math.cos(angle));
-            this.xTabApp[i] = (int) newX;
-            this.yTabApp[i] = (int) newY;
-        }
-        // Apply the translation and zoom
-        apparentPolygon.reset();
-        for (int i = 0; i < nbPoints; i++) {
-            xTabApp[i] = (int) (xTabApp[i] * zoom + x0);
-            yTabApp[i] = (int) (yTabApp[i] * zoom + y0);
-            apparentPolygon.addPoint((int) (xTabApp[i]), (int) (yTabApp[i]));
-        }
-    }
-
+//    /**
+//     * Get the polygon transformed by the given translation and rotation.
+//     *
+//     * @param x0
+//     * @param y0
+//     * @param zoom
+//     * @param angle
+//     * @return
+//     */
+//    public void computeApparentPolygon(float x0, float y0, float zoom, float angle) {
+//        // Apply the rotation on all of these points.
+//        for (int i = 0; i < nbPoints; i++) {
+//            float newX = (float) (xTab[i] * Math.cos(angle) - yTab[i] * Math.sin(angle));
+//            float newY = (float) (xTab[i] * Math.sin(angle) + yTab[i] * Math.cos(angle));
+//            this.xTabApp[i] = (int) newX;
+//            this.yTabApp[i] = (int) newY;
+//        }
+//        // Apply the translation and zoom
+//        apparentPolygon.reset();
+//        for (int i = 0; i < nbPoints; i++) {
+//            xTabApp[i] = (int) (xTabApp[i] * zoom + x0);
+//            yTabApp[i] = (int) (yTabApp[i] * zoom + y0);
+//            apparentPolygon.addPoint((int) (xTabApp[i]), (int) (yTabApp[i]));
+//        }
+//    }
     public int[] getXTabApp() {
         return xTabApp;
     }
@@ -87,10 +86,9 @@ public class FloatPolygon {
         return yTabApp;
     }
 
-    public Polygon getPolygon() {
-        return apparentPolygon;
-    }
-
+//    public Polygon getPolygon() {
+//        return apparentPolygon;
+//    }
     public String toString() {
         String res = "Polygon{";
         res += " <" + apparentPolygon.npoints + "> ";
@@ -108,8 +106,8 @@ public class FloatPolygon {
      * @param yPoint
      * @return
      */
-    public boolean containsPixel(int xPoint, int yPoint) {
-        boolean result = apparentPolygon.contains(xPoint, yPoint);
-        return result;
-    }
+//    public boolean containsPixel(int xPoint, int yPoint) {
+//        boolean result = apparentPolygon.contains(xPoint, yPoint);
+//        return result;
+//    }
 }

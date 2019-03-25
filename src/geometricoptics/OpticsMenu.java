@@ -19,19 +19,27 @@ import javax.swing.JMenuItem;
 public class OpticsMenu extends JMenu implements ActionListener, ItemListener {
 
     private World world;
+    private OpticsPanel panel;
 
-    public OpticsMenu(World w) {
+    public OpticsMenu(World w, OpticsPanel p) {
         super("Menu");
 
         world = w;
+        panel = p;
 
         // Add objects to the simulation
         JMenu addMenu = new JMenu("Add");
 
+        // Lens
         JMenuItem item = new JMenuItem("Create lens");
         item.addActionListener(this);
         addMenu.add(item);
+        // Laser
         item = new JMenuItem("Create laser");
+        item.addActionListener(this);
+        addMenu.add(item);
+        // Mirror
+        item = new JMenuItem("Create mirror");
         item.addActionListener(this);
         addMenu.add(item);
 
@@ -47,7 +55,7 @@ public class OpticsMenu extends JMenu implements ActionListener, ItemListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         String command = e.getActionCommand();
-        world.applyCommand(command);
+        panel.applyCommand(command);
     }
 
 }

@@ -13,12 +13,12 @@ import javax.swing.JMenuBar;
  *
  * @author arthurmanoha
  */
-public class GeometricOptics{
+public class GeometricOptics {
 
     /**
      * @param args the command line arguments
      */
-    public static void main(String[] args){
+    public static void main(String[] args) {
 
         World world = new World();
 
@@ -30,13 +30,14 @@ public class GeometricOptics{
 
         JMenuBar menuBar = new JMenuBar();
 
-        JMenu menu = new OpticsMenu(world);
-
-        menuBar.add(menu);
-
         window.setJMenuBar(menuBar);
 
         OpticsPanel panel = new OpticsPanel(world);
+        JMenu menu = new OpticsMenu(world, panel);
+        menuBar.add(menu);
+
+        MyMouseListener listener = new MyMouseListener(panel);
+        panel.setMouseListener(listener);
 
         window.addKeyListener(new MyKeyListener(world));
 

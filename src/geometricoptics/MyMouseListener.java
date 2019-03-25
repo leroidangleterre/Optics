@@ -15,34 +15,11 @@ import java.awt.event.MouseMotionListener;
  */
 public class MyMouseListener implements MouseListener, MouseMotionListener {
 
-    private World world;
-    private ZoomScroll zs;
-//    private int lastX, lastY;
     private OpticsPanel opticsPanel;
 
-//    private float xMouse, yMouse;
-//    private float xLeftClick, yLeftClick, xRightClick, yRightClick;
-//    private boolean leftClickActive, rightClickActive;
-    public MyMouseListener(ZoomScroll zsParam, World w, OpticsPanel panel) {
-        zs = zsParam;
-        world = w;
+    public MyMouseListener(OpticsPanel panel) {
         opticsPanel = null;
-
-//        xLeftClick = -1;
-//        yLeftClick = -1;
-//        xRightClick = -1;
-//        yRightClick = -1;
-//        leftClickActive = false;
-//        rightClickActive = false;
         opticsPanel = panel;
-    }
-
-    public MyMouseListener(ZoomScroll zsParam, World w) {
-        this(zsParam, w, null);
-    }
-
-    public MyMouseListener(ZoomScroll zsParam) {
-        this(zsParam, null);
     }
 
     @Override
@@ -56,7 +33,6 @@ public class MyMouseListener implements MouseListener, MouseMotionListener {
             case 1:
                 // Place an object, or start selecting things
                 opticsPanel.receiveLeftClick(e.getX(), e.getY());
-//                leftClickActive = true;
                 break;
             case 2:
                 // Start scrolling
@@ -64,7 +40,6 @@ public class MyMouseListener implements MouseListener, MouseMotionListener {
                 break;
             case 3:
                 opticsPanel.receiveRightClick(e.getX(), e.getY());
-//                rightClickActive = true;
                 break;
         }
     }
@@ -75,11 +50,9 @@ public class MyMouseListener implements MouseListener, MouseMotionListener {
         switch (e.getButton()) {
             case 1:
                 opticsPanel.receiveLeftUnclick(e.getX(), e.getY());
-//                leftClickActive = false;
                 break;
             case 3:
                 opticsPanel.receiveRightUnclick(e.getX(), e.getY());
-//                rightClickActive = false;
                 break;
             default:
                 break;
@@ -96,12 +69,12 @@ public class MyMouseListener implements MouseListener, MouseMotionListener {
 
     @Override
     public void mouseDragged(MouseEvent e) {
-        opticsPanel.receiveMouseMove(e.getX(), e.getY());
+        opticsPanel.receiveMouseMoved(e.getX(), e.getY());
     }
 
     @Override
     public void mouseMoved(MouseEvent e) {
-        opticsPanel.receiveMouseMove(e.getX(), e.getY());
+        opticsPanel.receiveMouseMoved(e.getX(), e.getY());
     }
 
     public void setOpticsPanel(OpticsPanel p) {
