@@ -11,35 +11,28 @@ import java.awt.Color;
  *
  * @author arthurmanoha
  */
-public class Laser extends OpticElement {
+public class Mirror extends OpticElement {
 
     float width, height;
 
-    public Laser() {
+    public Mirror() {
         super();
-        width = 4f;
-        height = 2f;
-        polygon = new FloatPolygon();
+        width = 1f;
+        height = 3f;
+        polygon.addPoint(width / 2, height / 2);
         polygon.addPoint(-width / 2, height / 2);
         polygon.addPoint(-width / 2, -height / 2);
-        polygon.addPoint(width / 2 - height / 2, -height / 2);
-        polygon.addPoint(width / 2, 0);
-        polygon.addPoint(width / 2 - height / 2, height / 2);
-        color = Color.orange;
+        polygon.addPoint(width / 2, -height / 2);
+        color = Color.red;
     }
 
-    public Laser(float x, float y) {
+    public Mirror(float x, float y) {
         this();
         this.x = x;
         this.y = y;
     }
 
-    /**
-     * Copy constructor.
-     *
-     * @param toCopy the existing laser that we want to duplicate.
-     */
-    public Laser(Laser toCopy) {
+    public Mirror(Mirror toCopy) {
 
         this.polygon = toCopy.polygon.clone();
         this.color = toCopy.color;
@@ -49,10 +42,18 @@ public class Laser extends OpticElement {
     }
 
     public OpticElement clone() {
-        Laser copy = new Laser(this);
+        Mirror copy = new Mirror(this);
         return copy;
     }
 
+    /**
+     * This method tells if a given set of coordinates is contained in the
+     * element.
+     *
+     * @param xPoint
+     * @param yPoint
+     * @return
+     */
     @Override
     public boolean containsPoint(float xPoint, float yPoint) {
 
@@ -60,12 +61,6 @@ public class Laser extends OpticElement {
         float xConv = (float) ((xPoint - this.x) * Math.cos(-rotation) - (yPoint - this.y) * Math.sin(-rotation));
         float yConv = (float) ((xPoint - this.x) * Math.sin(-rotation) + (yPoint - this.y) * Math.cos(-rotation));
 
-        // Point must be inside the triangle defined by the two diagonals of the laser emitting point.
-        boolean inCorner = yConv < -xConv + width / 2 && yConv >= xConv - width / 2;
-
-        // Point must be inside the rectangle.
-        boolean inRectangle = xConv >= -width / 2 && xConv <= width / 2 && yConv >= -height / 2 && yConv <= height / 2;
-
-        return inCorner && inRectangle;
+        return xConv >= -width / 2 && xConv <= width / 2 && yConv >= -height / 2 && yConv <= height / 2;
     }
 }

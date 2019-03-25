@@ -137,10 +137,6 @@ public abstract class OpticElement implements Cloneable {
         return result;
     }
 
-    public boolean containsPixel(int x, int y) {
-        return this.polygon.containsPixel(x, y);
-    }
-
     @Override
     public String toString() {
         return "OpticElement at (" + x + ", " + y + ");";
@@ -167,9 +163,11 @@ public abstract class OpticElement implements Cloneable {
     /**
      * Rotate the object around the given point.
      *
+     * @param dAngle
+     * @param x0
+     * @param y0
      */
     public void rotate(float dAngle, float x0, float y0) {
-
         // Turn the object
         this.rotate(dAngle);
 

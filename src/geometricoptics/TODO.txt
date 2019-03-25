@@ -1,0 +1,4 @@
+Create packages
+Class World is too large and deals with the model AND the UI
+Move to OpticsPanel the events treatment; the World must not know about the mouse or the display.
+OpticsPanel implements all the listeners. Some methods become private.
