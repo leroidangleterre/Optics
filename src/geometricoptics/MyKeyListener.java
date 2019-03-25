@@ -66,8 +66,7 @@ public class MyKeyListener implements KeyListener {
     }
 
     @Override
-    public void keyReleased(KeyEvent e
-    ) {
+    public void keyReleased(KeyEvent e) {
         switch (e.getKeyCode()) {
             case KeyEvent.VK_CONTROL:
                 nbCtrlPressed = false;
