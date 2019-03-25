@@ -37,7 +37,7 @@ public class GeometricOptics {
         menuBar.add(menu);
 
         MyMouseListener listener = new MyMouseListener(panel);
-        panel.setMouseListener(listener);
+//        panel.setMouseListener(listener);
 
         window.addKeyListener(new MyKeyListener(world));
 

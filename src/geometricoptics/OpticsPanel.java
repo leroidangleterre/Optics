@@ -9,12 +9,9 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.MouseAdapter;
 import java.awt.Graphics;
-<<<<<<< HEAD
-=======
 import java.awt.Polygon;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
->>>>>>> master
 import javax.swing.JPanel;
 
 /**
@@ -34,6 +31,7 @@ public class OpticsPanel extends JPanel {
 
     private boolean isCurrentlyScrolling;
 
+    private int lastX, lastY;
     float zoomFact = 1.03f;
 
     private boolean leftClickActive, rightClickActive;
@@ -68,33 +66,24 @@ public class OpticsPanel extends JPanel {
 
         world.addListener(this);
 
-<<<<<<< HEAD
-        this.addMouseWheelListener(new MyMouseWheelListener(zoomScroll, w, this));
-=======
         OpticsPanelMouseAdapter mouseAdapter = new OpticsPanelMouseAdapter();
 
         this.addMouseListener(mouseAdapter);
         this.addMouseMotionListener(mouseAdapter);
         this.addMouseWheelListener(mouseAdapter);
->>>>>>> master
         this.addKeyListener(new MyKeyListener(w));
 
         isCurrentlyScrolling = false;
-        lastXMouse = -1;
-        lastYMouse = -1;
-
-        leftClickActive = false;
-        rightClickActive = false;
-        isCurrentlySelecting = false;
+        lastX = -1;
+        lastY = -1;
     }
 
-    public void setMouseListener(MyMouseListener list) {
-        MyMouseListener mouseListener = new MyMouseListener(this);
-
-        this.addMouseListener(mouseListener);
-        this.addMouseMotionListener(mouseListener);
-    }
-
+//    public void setMouseListener(MyMouseListener list) {
+//        MyMouseListener mouseListener = new MyMouseListener(this);
+//
+//        this.addMouseListener(mouseListener);
+//        this.addMouseMotionListener(mouseListener);
+//    }
     @Override
     public void paintComponent(Graphics g) {
 
@@ -274,12 +263,12 @@ public class OpticsPanel extends JPanel {
         zoomScroll.setZoom(fact * zoomScroll.getZoom());
     }
 
-<<<<<<< HEAD
     /**
-     * Apply the command given as a parameter. Example: "Lens" or "Laser" to
+     * Apply the command given as a parameter.Example : "Lens" or "Laser" to
      * create a lens or a laser.
      *
      * @param command
+     *
      */
     public void applyCommand(String command) {
         if (command.startsWith("Create")) {
@@ -292,7 +281,10 @@ public class OpticsPanel extends JPanel {
                 world.create(new Laser(xMouseInWorld, yMouseInWorld));
             } else if (objectName.equals("mirror")) {
                 world.create(new Mirror(xMouseInWorld, yMouseInWorld));
-=======
+            }
+        }
+    }
+
     private class OpticsPanelMouseAdapter extends MouseAdapter {
 
         @Override
@@ -303,12 +295,12 @@ public class OpticsPanel extends JPanel {
 
         @Override
         public void mouseDragged(MouseEvent e) {
-            receiveMouseMove(e.getX(), e.getY());
+            receiveMouseMoved(e.getX(), e.getY());
         }
 
         @Override
         public void mouseMoved(MouseEvent e) {
-            receiveMouseMove(e.getX(), e.getY());
+            receiveMouseMoved(e.getX(), e.getY());
         }
 
         @Override
@@ -344,7 +336,6 @@ public class OpticsPanel extends JPanel {
                     break;
                 default:
                     break;
->>>>>>> master
             }
         }
     }
