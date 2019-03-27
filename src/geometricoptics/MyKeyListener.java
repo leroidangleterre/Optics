@@ -37,6 +37,12 @@ public class MyKeyListener implements KeyListener {
             case KeyEvent.VK_D:
                 world.duplicateSelection();
                 break;
+            case KeyEvent.VK_L:
+                world.toggleLasers();
+                break;
+            case KeyEvent.VK_P:
+                world.togglePlayPause();
+                break;
             case KeyEvent.VK_DELETE:
                 world.deleteSelected();
                 break;
@@ -59,6 +65,9 @@ public class MyKeyListener implements KeyListener {
 
             case KeyEvent.VK_CONTROL:
                 nbCtrlPressed = true;
+                break;
+            case KeyEvent.VK_ENTER:
+                world.evolve();
                 break;
             default:
                 break;

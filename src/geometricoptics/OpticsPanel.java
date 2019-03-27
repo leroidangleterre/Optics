@@ -60,9 +60,9 @@ public class OpticsPanel extends JPanel {
         this.setPreferredSize(preferredSize);
         this.zoomScroll = new ZoomScroll();
         this.zoomScroll.addListener(this);
-        zoomScroll.setX(500);
-        zoomScroll.setY(350);
-        zoomScroll.setZoom(50f);
+        zoomScroll.setX(636);
+        zoomScroll.setY(522);
+        zoomScroll.setZoom(21.1f);
 
         world.addListener(this);
 
@@ -146,9 +146,11 @@ public class OpticsPanel extends JPanel {
             world.elementBeingCreated = false;
         }
         if (world.pointIsInSelectedObject(xClickInWorld, yClickInWorld)) {
+            System.out.println("world.point is in selected object");
             // click on a selected object: start moving all selected objects
             selectionBeingMoved = true;
         } else {
+            System.out.println("world.point is NOT in selected object");
             // Start the selection rectangle.
             isCurrentlySelecting = true;
         }
@@ -197,6 +199,7 @@ public class OpticsPanel extends JPanel {
         float yUnclickInWorld = (height - yClick - zoomScroll.getY()) / zoomScroll.getZoom();
 
         if (isCurrentlySelecting) {
+            System.out.println("isCurrentlySelecting");
             world.unselectEverything();
             world.selectObjectsInRegion(xClickInWorld, yClickInWorld, xUnclickInWorld, yUnclickInWorld);
         }

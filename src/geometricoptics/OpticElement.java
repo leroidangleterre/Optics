@@ -51,7 +51,7 @@ public abstract class OpticElement implements Cloneable {
         this.y = toCopy.y;
         this.size = toCopy.size;
         this.rotation = toCopy.rotation;
-        for (int i = 0; i < polygon.getNbPoints(); i++) {
+        for (int i = 0; i < toCopy.polygon.getNbPoints(); i++) {
             this.polygon.addPoint(toCopy.polygon.getXTabApp()[i],
                     toCopy.polygon.getYTabApp()[i]);
         }
@@ -178,4 +178,6 @@ public abstract class OpticElement implements Cloneable {
         this.x = (float) (x0 + dx * Math.cos(dAngle) - dy * Math.sin(dAngle));
         this.y = (float) (y0 + dx * Math.sin(dAngle) + dy * Math.cos(dAngle));
     }
+
+    public abstract Photon interactWithPhoton(Photon p);
 }

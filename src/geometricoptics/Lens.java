@@ -65,4 +65,9 @@ public class Lens extends OpticElement {
 
         return result;
     }
+
+    @Override
+    public Photon interactWithPhoton(Photon p) {
+        return p;
+    }
 }

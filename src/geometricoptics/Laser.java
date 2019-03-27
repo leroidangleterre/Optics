@@ -14,6 +14,7 @@ import java.awt.Color;
 public class Laser extends OpticElement {
 
     float width, height;
+    boolean status;
 
     public Laser() {
         super();
@@ -26,6 +27,7 @@ public class Laser extends OpticElement {
         polygon.addPoint(width / 2, 0);
         polygon.addPoint(width / 2 - height / 2, height / 2);
         color = Color.orange;
+        status = false;
     }
 
     public Laser(float x, float y) {
@@ -67,5 +69,41 @@ public class Laser extends OpticElement {
         boolean inRectangle = xConv >= -width / 2 && xConv <= width / 2 && yConv >= -height / 2 && yConv <= height / 2;
 
         return inCorner && inRectangle;
+    }
+
+    public Photon emit() {
+        if (status) {
+//        System.out.println("Laser.emit()");
+            float xPhoton = (float) (width / 2 * Math.cos(rotation)) + this.x;
+            float yPhoton = (float) (width / 2 * Math.sin(rotation)) + this.y;
+            float vX = (float) (width / 2 * Math.cos(rotation));
+            float vY = (float) (width / 2 * Math.sin(rotation));
+            return new Photon(xPhoton, yPhoton, vX, vY);
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * Absorb any colliding photon.
+     *
+     * @param p
+     * @return
+     */
+    @Override
+    public Photon interactWithPhoton(Photon p) {
+        if (this.containsPoint(p.getX(), p.getY())) {
+            return null;
+        } else {
+            return p;
+        }
+    }
+
+    public void activate(boolean active) {
+        this.status = active;
+    }
+
+    public void toggle() {
+        this.status = !this.status;
     }
 }
