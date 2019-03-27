@@ -33,6 +33,7 @@ public class GeometricOptics {
         window.setJMenuBar(menuBar);
 
         OpticsPanel panel = new OpticsPanel(world);
+        world.addListener(panel);
         JMenu menu = new OpticsMenu(world, panel);
         menuBar.add(menu);
 

@@ -9,6 +9,8 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Timer;
+import java.util.TimerTask;
 import javax.swing.JComponent;
 
 /**
@@ -23,10 +25,21 @@ public class World {
     private ArrayList<OpticElement> elements;
     private ArrayList<OpticElement> clones; // Clones or new elements
 
+    private ArrayList<Photon> photonList;
+    private boolean allLasersActive;
+
     private ArrayList<JComponent> listeners;
 
     private boolean isAllSelected;
     public boolean elementBeingCreated;
+
+    private float dt;
+
+    private float xMax = 30;
+
+    private Timer timer;
+
+    private boolean isPlaying;
 
     public World() {
         elements = new ArrayList<>();
@@ -36,10 +49,33 @@ public class World {
 
         clones = new ArrayList<>();
 
-        elements.add(new Mirror(0, 4));
-        elements.add(new Mirror(0, 0));
-        elements.add(new Mirror(-6, 0));
-        elements.add(new Mirror(6, 0));
+        for (int i = 0; i < 1; i++) {
+
+            Laser newLaser = new Laser(0, 0);
+            elements.add(newLaser);
+            float angle = (float) (i * 0.03);
+            newLaser.rotate(angle);
+
+            Mirror m = new Mirror(25, i);
+            elements.add(m);
+        }
+
+        dt = 0.1f;
+
+        photonList = new ArrayList<>();
+        allLasersActive = true;
+
+        timer = new Timer();
+        timer.schedule(new TimerTask() {
+
+            @Override
+            public void run() {
+                if (isPlaying) {
+                    evolve();
+                }
+            }
+        }, 0, 25);
+        isPlaying = true;
     }
 
     public void addListener(JComponent component) {
@@ -63,6 +99,9 @@ public class World {
             clones.add(elem);
             elem.setSelected(true);
             elementBeingCreated = true;
+        }
+        if (elem instanceof Laser) {
+            ((Laser) elem).activate(this.allLasersActive);
         }
         triggerListeners();
     }
@@ -95,7 +134,7 @@ public class World {
         }
     }
 
-    public void paint(Graphics g, float x0, float y0, float zoom) {
+    public synchronized void paint(Graphics g, float x0, float y0, float zoom) {
 
         int graphicsHeight = g.getClipBounds().height;
 
@@ -110,6 +149,9 @@ public class World {
         }
         for (OpticElement element : clones) {
             element.paint(g, x0, y0, zoom);
+        }
+        for (Photon p : photonList) {
+            p.paint(g, x0, y0, zoom);
         }
     }
 
@@ -158,15 +200,17 @@ public class World {
     }
 
     public void makeClonesReal() {
+        System.out.println("World.makeClonesReal() " + elements.size() + ", " + clones.size());
 
         if (elementBeingCreated) {
             elementBeingCreated = false;
             for (OpticElement clone : clones) {
                 elements.add(clone);
-                clone.isSelected = false;
+//                clone.isSelected = false;
             }
             clones.clear();
         }
+        System.out.println("      makeClonesReal() " + elements.size() + ", " + clones.size());
     }
 
     /**
@@ -192,11 +236,15 @@ public class World {
      */
     public OpticElement getObjectAt(float x, float y) {
 
+        System.out.println("Point (" + x + ", " + y + "):");
         for (OpticElement e : elements) {
+            System.out.println("    element at " + e.x + ", " + e.y + " ");
             if (e.containsPoint(x, y)) {
                 // We found the first object that contains that point.
+                System.out.println("contains point.");
                 return e;
             }
+            System.out.println("does not contain point.");
         }
 
         // No element contains that point.
@@ -373,5 +421,58 @@ public class World {
             }
         }
         return false;
+    }
+
+    /**
+     * Delete any photon located too far away from the origin.
+     */
+    private void removeExternalPhotons() {
+        Iterator iter = photonList.iterator();
+        while (iter.hasNext()) {
+            Photon p = (Photon) iter.next();
+            if (p.getDistance() > xMax) {
+                iter.remove();
+            }
+        }
+    }
+
+    /**
+     * Light is emitted from the lasers and interacts with the objects.
+     */
+    public synchronized void evolve() {
+        for (Photon p : photonList) {
+            p.travel(dt);
+        }
+        for (OpticElement e : elements) {
+            if (e instanceof Laser) {
+                Photon newPhoton = ((Laser) e).emit();
+                if (newPhoton != null) {
+                    photonList.add(newPhoton);
+                }
+            }
+        }
+        for (OpticElement e : elements) {
+            for (Photon p : photonList) {
+                e.interactWithPhoton(p);
+            }
+        }
+        removeExternalPhotons();
+        triggerListeners();
+    }
+
+    /**
+     * Activate all lasers if they are off, or shut them off.
+     *
+     */
+    public void toggleLasers() {
+        for (OpticElement elem : elements) {
+            if (elem instanceof Laser) {
+                ((Laser) elem).toggle();
+            }
+        }
+    }
+
+    public void togglePlayPause() {
+        isPlaying = !isPlaying;
     }
 }
