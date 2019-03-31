@@ -38,6 +38,8 @@ public class Mirror extends OpticElement {
         this.color = toCopy.color;
         this.x = toCopy.x;
         this.y = toCopy.y;
+        this.width = toCopy.width;
+        this.height = toCopy.height;
         this.rotation = toCopy.rotation;
     }
 

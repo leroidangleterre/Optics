@@ -48,6 +48,8 @@ public class Laser extends OpticElement {
         this.x = toCopy.x;
         this.y = toCopy.y;
         this.rotation = toCopy.rotation;
+        this.width = toCopy.width;
+        this.height = toCopy.height;
     }
 
     public OpticElement clone() {

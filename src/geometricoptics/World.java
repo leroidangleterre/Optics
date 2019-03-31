@@ -22,6 +22,8 @@ import javax.swing.JComponent;
  */
 public class World {
 
+    private boolean testPixels = false;
+
     private ArrayList<OpticElement> elements;
     private ArrayList<OpticElement> clones; // Clones or new elements
 
@@ -89,6 +91,13 @@ public class World {
     }
 
     /**
+     * Display the size of the elements list and the clones list.
+     */
+    public void test() {
+        System.out.println("World: " + elements.size() + " elements, " + clones.size() + " clones.");
+    }
+
+    /**
      * Create a new element.
      *
      * @param elem the newly created element. The coordinates of the new element
@@ -152,6 +161,23 @@ public class World {
         }
         for (Photon p : photonList) {
             p.paint(g, x0, y0, zoom);
+        }
+
+        if (testPixels) {
+            // Display pixels that are contained in any elements.
+            for (int xPixel = 0; xPixel <= 1000; xPixel += 50) {
+                for (int yPixel = 0; yPixel <= 1000; yPixel += 50) {
+                    // Compute in-world coordinates of the pixel
+                    float xReal = (xPixel - x0) / zoom;
+                    float yReal = (graphicsHeight - yPixel - y0) / zoom;
+                    if (this.pointIsInObject(xReal, yReal)) {
+                        g.setColor(Color.red);
+                    } else {
+                        g.setColor(Color.black);
+                    }
+                    g.fillRect(xPixel - 1, yPixel - 1, 3, 3);
+                }
+            }
         }
     }
 
@@ -343,15 +369,19 @@ public class World {
     public void selectObjectsInRegion(float x1, float y1, float x2, float y2) {
 
         if (x1 == x2 && y1 == y2) {
+            System.out.println("World.selectObjectsInRegion, same spot");
             // Selection by simple click on the object.
             for (OpticElement elem : elements) {
                 if (elem.containsPoint(x1, y1)) {
                     elem.setSelected(true);
+                    System.out.println("Elem " + elem + " is now selected.");
                 } else {
                     elem.setSelected(false);
+                    System.out.println("Elem " + elem + " is now NOT selected.");
                 }
             }
         } else {
+            System.out.println("World.selectObjectsInRegion, selection by rectangle");
             // Selection by rectangle.
             float xLeft = Math.min(x1, x2);
             float xRight = Math.max(x1, x2);

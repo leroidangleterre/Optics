@@ -43,6 +43,10 @@ public class MyKeyListener implements KeyListener {
             case KeyEvent.VK_P:
                 world.togglePlayPause();
                 break;
+            case KeyEvent.VK_T:
+                // Test
+                world.test();
+                break;
             case KeyEvent.VK_DELETE:
                 world.deleteSelected();
                 break;
