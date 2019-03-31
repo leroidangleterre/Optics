@@ -142,6 +142,7 @@ public class OpticsPanel extends JPanel {
 
         if (world.elementBeingCreated) {
             selectionBeingMoved = false;
+            System.out.println("making clones real.");
             world.makeClonesReal();
             world.elementBeingCreated = false;
         }
