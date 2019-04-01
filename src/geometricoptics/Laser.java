@@ -50,6 +50,7 @@ public class Laser extends OpticElement {
         this.rotation = toCopy.rotation;
         this.width = toCopy.width;
         this.height = toCopy.height;
+        this.status = toCopy.status;
     }
 
     public OpticElement clone() {
@@ -108,4 +109,10 @@ public class Laser extends OpticElement {
     public void toggle() {
         this.status = !this.status;
     }
+
+    @Override
+    public String toString() {
+        return "Laser " + x + " " + y + " " + rotation + " " + width + " " + height + " " + status;
+    }
+
 }
