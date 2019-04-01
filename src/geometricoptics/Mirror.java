@@ -127,4 +127,9 @@ public class Mirror extends OpticElement {
         }
         return p;
     }
+
+    @Override
+    public String toString() {
+        return "Mirror " + x + " " + y + " " + rotation + " " + width + " " + height;
+    }
 }

@@ -7,6 +7,13 @@ package geometricoptics;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Timer;
@@ -369,19 +376,19 @@ public class World {
     public void selectObjectsInRegion(float x1, float y1, float x2, float y2) {
 
         if (x1 == x2 && y1 == y2) {
-            System.out.println("World.selectObjectsInRegion, same spot");
+//            System.out.println("World.selectObjectsInRegion, same spot");
             // Selection by simple click on the object.
             for (OpticElement elem : elements) {
                 if (elem.containsPoint(x1, y1)) {
                     elem.setSelected(true);
-                    System.out.println("Elem " + elem + " is now selected.");
+//                    System.out.println("Elem " + elem + " is now selected.");
                 } else {
                     elem.setSelected(false);
-                    System.out.println("Elem " + elem + " is now NOT selected.");
+//                    System.out.println("Elem " + elem + " is now NOT selected.");
                 }
             }
         } else {
-            System.out.println("World.selectObjectsInRegion, selection by rectangle");
+//            System.out.println("World.selectObjectsInRegion, selection by rectangle");
             // Selection by rectangle.
             float xLeft = Math.min(x1, x2);
             float xRight = Math.max(x1, x2);
@@ -504,5 +511,65 @@ public class World {
 
     public void togglePlayPause() {
         isPlaying = !isPlaying;
+    }
+
+    public void saveToFile(File f) {
+        try {
+            BufferedWriter writer = new BufferedWriter(new FileWriter(f));
+
+            for (OpticElement e : elements) {
+                writer.write(e.toString() + "\n");
+            }
+
+            writer.close();
+        } catch (IOException e) {
+            System.out.println("Writing error.");
+        }
+    }
+
+    public void loadFromFile(File f) {
+        try {
+            elements.clear();
+            BufferedReader reader = new BufferedReader(new FileReader(f));
+
+            String line = reader.readLine();
+            do {
+
+                String[] values = line.split(" ");
+
+                String objectType = values[0];
+                OpticElement newElement;
+                float x = new Float(values[1]);
+                float y = new Float(values[2]);
+                float rotation = new Float(values[3]);
+                float width = new Float(values[4]);
+                float height = new Float(values[5]);
+                switch (objectType) {
+                    case "Laser":
+                        newElement = new Laser();
+                        ((Laser) newElement).width = width;
+                        ((Laser) newElement).height = height;
+                        break;
+                    case "Mirror":
+                        newElement = new Mirror();
+                        ((Mirror) newElement).width = width;
+                        ((Mirror) newElement).height = height;
+                        break;
+                    default:
+                        newElement = null;
+                        break;
+                }
+                if (newElement != null) {
+                    newElement.x = x;
+                    newElement.y = y;
+                    newElement.rotation = rotation;
+                }
+                elements.add(newElement);
+                line = reader.readLine();
+            } while (line != null);
+
+        } catch (IOException e) {
+            System.out.println("error reading file");
+        }
     }
 }

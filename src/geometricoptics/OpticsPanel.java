@@ -142,16 +142,13 @@ public class OpticsPanel extends JPanel {
 
         if (world.elementBeingCreated) {
             selectionBeingMoved = false;
-            System.out.println("making clones real.");
             world.makeClonesReal();
             world.elementBeingCreated = false;
         }
         if (world.pointIsInSelectedObject(xClickInWorld, yClickInWorld)) {
-            System.out.println("world.point is in selected object");
             // click on a selected object: start moving all selected objects
             selectionBeingMoved = true;
         } else {
-            System.out.println("world.point is NOT in selected object");
             // Start the selection rectangle.
             isCurrentlySelecting = true;
         }

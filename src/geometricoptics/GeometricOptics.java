@@ -28,17 +28,13 @@ public class GeometricOptics {
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         window.setVisible(true);
 
-        JMenuBar menuBar = new JMenuBar();
+        OpticsPanel panel = new OpticsPanel(world);
+
+        JMenuBar menuBar = new OpticsMenuBar(world, panel);
 
         window.setJMenuBar(menuBar);
 
-        OpticsPanel panel = new OpticsPanel(world);
         world.addListener(panel);
-        JMenu menu = new OpticsMenu(world, panel);
-        menuBar.add(menu);
-
-        MyMouseListener listener = new MyMouseListener(panel);
-//        panel.setMouseListener(listener);
 
         window.addKeyListener(new MyKeyListener(world));
 
