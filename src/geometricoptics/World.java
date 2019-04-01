@@ -78,7 +78,7 @@ public class World {
         timer.schedule(new TimerTask() {
 
             @Override
-            public void run() {
+            public synchronized void run() {
                 if (isPlaying) {
                     evolve();
                 }
@@ -326,6 +326,22 @@ public class World {
     }
 
     /**
+     * Flip horizontally the selection around the vertical axis.
+     *
+     */
+    public void flipSelectionHorizontally() {
+        float x = findBarycenterOfSelectionX();
+        for (OpticElement e : elements) {
+            if (e.isSelected) {
+                float dx = x - e.x;
+                e.x += 2 * dx;
+                float dR = (float) (Math.PI / 2 - e.rotation);
+                e.rotation += 2 * dR;
+            }
+        }
+    }
+
+    /**
      * Compute the x-coordinate of the barycenter of all objects that are
      * currently selected.
      *
@@ -407,7 +423,7 @@ public class World {
      * method ends, all previously existing objects are unselected, and all the
      * copies are selected.
      */
-    public void duplicateSelection() {
+    public synchronized void duplicateSelection() {
 
         for (OpticElement e : elements) {
 

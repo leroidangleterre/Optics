@@ -58,6 +58,12 @@ public class OpticsMenuBar extends JMenuBar implements ActionListener, ItemListe
         item = new JMenuItem("Load");
         item.addActionListener(this);
         saveMenu.add(item);
+
+        JMenu toolsMenu = new JMenu("Tools");
+        this.add(toolsMenu);
+        item = new JMenuItem("Symmetry");
+        item.addActionListener(this);
+        toolsMenu.add(item);
     }
 
     @Override
@@ -77,7 +83,7 @@ public class OpticsMenuBar extends JMenuBar implements ActionListener, ItemListe
 
                 world.saveToFile(file);
             }
-        } else if (command == "Load") {
+        } else if (command.equals("Load")) {
             JFileChooser fileChooser = new JFileChooser();
             int result = fileChooser.showSaveDialog(this);
 
@@ -85,6 +91,8 @@ public class OpticsMenuBar extends JMenuBar implements ActionListener, ItemListe
                 File file = fileChooser.getSelectedFile();
                 world.loadFromFile(file);
             }
+        } else if (command.equals("Symmetry")) {
+            world.flipSelectionHorizontally();
         } else {
             panel.applyCommand(command);
         }

@@ -157,7 +157,7 @@ public abstract class OpticElement implements Cloneable {
      * @param dAngle the angle increment
      */
     public void rotate(float dAngle) {
-        this.rotation += dAngle;
+        setRotation(this.rotation + dAngle);
     }
 
     /**
