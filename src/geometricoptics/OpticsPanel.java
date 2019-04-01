@@ -9,7 +9,6 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.MouseAdapter;
 import java.awt.Graphics;
-import java.awt.Polygon;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import javax.swing.JPanel;
@@ -78,12 +77,6 @@ public class OpticsPanel extends JPanel {
         lastY = -1;
     }
 
-//    public void setMouseListener(MyMouseListener list) {
-//        MyMouseListener mouseListener = new MyMouseListener(this);
-//
-//        this.addMouseListener(mouseListener);
-//        this.addMouseMotionListener(mouseListener);
-//    }
     @Override
     public void paintComponent(Graphics g) {
 
@@ -197,7 +190,6 @@ public class OpticsPanel extends JPanel {
         float yUnclickInWorld = (height - yClick - zoomScroll.getY()) / zoomScroll.getZoom();
 
         if (isCurrentlySelecting) {
-            System.out.println("isCurrentlySelecting");
             world.unselectEverything();
             world.selectObjectsInRegion(xClickInWorld, yClickInWorld, xUnclickInWorld, yUnclickInWorld);
         }
@@ -275,7 +267,6 @@ public class OpticsPanel extends JPanel {
         if (command.startsWith("Create")) {
             // Create a new object
             String objectName = command.substring(7);
-            System.out.println("OpticsPanel is creating an object at world coordinates (" + xMouseInWorld + ", " + yMouseInWorld + ");");
             if (objectName.equals("lens")) {
                 world.create(new Lens(xMouseInWorld, yMouseInWorld));
             } else if (objectName.equals("laser")) {
