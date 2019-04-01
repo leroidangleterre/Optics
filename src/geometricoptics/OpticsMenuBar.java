@@ -9,20 +9,23 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.io.File;
+import javax.swing.JFileChooser;
 import javax.swing.JMenu;
+import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 
 /**
  *
  * @author arthurmanoha
  */
-public class OpticsMenu extends JMenu implements ActionListener, ItemListener {
+public class OpticsMenuBar extends JMenuBar implements ActionListener, ItemListener {
 
     private World world;
     private OpticsPanel panel;
 
-    public OpticsMenu(World w, OpticsPanel p) {
-        super("Menu");
+    public OpticsMenuBar(World w, OpticsPanel p) {
+        super();
 
         world = w;
         panel = p;
@@ -45,6 +48,16 @@ public class OpticsMenu extends JMenu implements ActionListener, ItemListener {
 
         this.add(addMenu);
 
+        JMenu saveMenu = new JMenu("Save/Load");
+        this.add(saveMenu);
+        // Save the current simulation
+        item = new JMenuItem("Save");
+        item.addActionListener(this);
+        saveMenu.add(item);
+        // Load simulations
+        item = new JMenuItem("Load");
+        item.addActionListener(this);
+        saveMenu.add(item);
     }
 
     @Override
@@ -55,7 +68,26 @@ public class OpticsMenu extends JMenu implements ActionListener, ItemListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         String command = e.getActionCommand();
-        panel.applyCommand(command);
+        if (command.equals("Save")) {
+            JFileChooser fileChooser = new JFileChooser();
+            int result = fileChooser.showSaveDialog(this);
+
+            if (result == JFileChooser.APPROVE_OPTION) {
+                File file = fileChooser.getSelectedFile();
+
+                world.saveToFile(file);
+            }
+        } else if (command == "Load") {
+            JFileChooser fileChooser = new JFileChooser();
+            int result = fileChooser.showSaveDialog(this);
+
+            if (result == JFileChooser.APPROVE_OPTION) {
+                File file = fileChooser.getSelectedFile();
+                world.loadFromFile(file);
+            }
+        } else {
+            panel.applyCommand(command);
+        }
     }
 
 }
